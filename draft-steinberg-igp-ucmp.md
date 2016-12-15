@@ -46,7 +46,7 @@ informative:
 --- abstract
 
 Large service provider networks typically rely heavily on using
-multiple parallel links and parallel path in the network topology to
+multiple parallel links and parallel paths in the network topology to
 achieve the desired bandwidth capacities and levels of redundancy. In
 order to be able to use these multipath resources efficiently they
 rely on Equal Cost Multipath (ECMP) routing in the underlying IGP
@@ -72,13 +72,13 @@ paths.
 # Introduction
 
 Large service provider networks typically rely heavily on using
-multiple parallel links and parallel path in the network topology to
+multiple parallel links and parallel paths in the network topology to
 achieve the desired bandwidth capacities and levels of redundancy. In
 order to be able to use these multipath resources efficiently they
 rely on Equal Cost Multipath (ECMP) routing in the underlying IGP
 (ISIS or OSPF).
 
-This works very well -- as long as the different paths are truly equal
+This works fairly well -- as long as the different paths are truly equal
 from a bandwidth perspective -- because ECMP (as its name implies) is
 designed for equal paths.  The problem occurs when the different
 paths through the network are in fact not equal and are of different
@@ -105,10 +105,27 @@ This memo proposed a method by which unequal weights can be computed
 for these paths based on actual link bandwidth, changing the load
 distribution mechanism of the routers from ECMP to Unequal Cost
 Multipath (UCMP). This weight computation happens entirely based on
-information available within the Link-State IGP without changing the
-IGP behaviour itself, i.e. the path decision of the IGP (the chosen
-set of multipath next-hops) is not modified, just the weigthing of the
-paths. 
+information available within the Link-State IGP. Note that the IGP
+path computation (SPF, Dijkstra-Algorithm) itself is not changed,
+i.e. the route selection of the IGP (the chosen set of multipath
+next-hops) is not modified, just the weigthing of the paths.
+
+## Objectives
+
+The objectives of the present specification, roughly in decreasing
+order of importance, are:
+
+* Representing a reasonable set of basic data types and structures
+  using binary encoding.  "Reasonable" here is largely influenced by
+  the capabilities of JSON, with the single addition of adding raw
+  byte strings.  The structures supported are limited to trees; no
+  loops or lattice-style graphs.
+
+* Being implementable in a very small amount of code, thus being
+  applicable to constrained nodes {{?I-D.ietf-lwig-terminology}}, even
+  of class 1.  (Complexity goal.)  As a corollary: Being close to
+  contemporary machine representations of data (e.g., not requiring
+  binary-to-decimal conversion).
 
 
 ## Terminology
