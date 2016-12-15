@@ -45,13 +45,38 @@ pi: [toc, sortrefs, symrefs, compact, comments]
 
 --- abstract
 
-[ Insert abstract here ]
+Large service provider networks typically rely heavily on using
+multiple parallel links and parallel path in the network topology to
+achieve the desired bandwidth capacities. In order to be able to use
+these multipath resources efficiently they rely on Equal Cost
+Multipath (ECMP) routing in the underlying IGP (ISIS or OSPF).
+
+This works very well -- as long as the different paths are truly equal
+from a bandwidth perspective -- as ECMP (as its name implies) is
+designed for equal paths.  The problem occurs when the different
+path through the network are in fact not equal and are of different
+bandwidth.
+
+There can be many reasons why paths might not be equal, one or more
+links in a bundle of links may have failed, or the physical rollout of
+links in the network was simply not possible in exactly symmetrical
+fashion due to economic or availability constraints.
+
+This memo proposed a method by which unequal weights can be computed
+for these paths based on available link bandwidth, changing the load
+distribution mechanism of the routers from ECMP to Unequal Cost
+Multipath (UCMP). This weight computation happens entirely based on
+information available within the Link-State IGP without changing the
+IGP behaviour itself, i.e. the path decision of the IGP (the chosen
+set of multipath next-hops) is not modified, just the weigthing of the
+paths. 
 
 --- middle
 
 # Introduction
 
-[ Insert introduction here ]
+(To be written -- for now please see the Abstract.)
+
 
 ## Terminology
 
