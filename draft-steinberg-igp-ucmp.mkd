@@ -141,10 +141,11 @@ node equivalent from the point of view of path selection.
 Each pair of [ingress, egress] nodes is considered in isolation, no
 attempt is made to account for bandwidth consumed by other flows in
 the network. This means that the result of the weight computation will
-not result in a globally optimal distribution of traffic. For this,
-something like RSVP-TE {{RFC3209}} with bandwidth reservation or a
-centralized controller architecture computing a globally optimal
-tunnel layout would be required.
+not result in a globally optimal distribution of traffic for any
+real-world traffic matrix. For this, something like RSVP-TE
+{{RFC3209}} with bandwidth reservation or a centralized controller
+architecture computing a globally optimal tunnel layout would be
+required.
 
 Instead, this approach is focused on a much more simple, distributed
 approach where each node in the graph can compute UCMP weights
@@ -172,9 +173,60 @@ For an example of a simple graph illustrating Minimum Path Bandwidth
 and UCMP weight computation see {{simple}}.
 
 ~~~~
-a ----- b
+   +-------+ +--------+ +--------+ +-------+ +-------+
+   A       DCI1       Agg1       Agg3      DCI3      Z
+   |  DC1  | |   M1   | |   C    | |   M2  | |  DC2  |
+   |       DCI2       Agg2       Agg4      DCI4      |
+   +-------+ +--------+ +--------+ +-------+ +-------+
 ~~~~
 {: #simple title="Simple UCMP graph"}
+
+bla
+
+~~~~
+              +-------+   +-------+   +------+   +------+
+              |       |   |       |   |      |   |      |
+           +--+ AGN11 +---+ AGN21 +---+ ABR1 +---+ LSR1 +--> to AGN
+          /   |       |  /|       |   |      |   |      |
+   +----+/    +-------+\/ +-------+   +------+  /+------+
+   | AN |              /\                     \/
+   +----+\    +-------+  \+-------+   +------+/\ +------+
+          \   |       |   |       |   |      |  \|      |
+           +--+ AGN12 +---+ AGN22 +---+ ABR2 +---+ LSR2 +--> to AGN
+              |       |   |       |   |      |   |      |
+              +-------+   +-------+   +------+   +------+
+
+   static route     ISIS L1 LDP             ISIS L2 LDP
+
+   <-Access-><--Aggregation Domain--><---------Core--------->
+~~~~
+{: #smpls title="Seamless MPLS"}
+
+~~~~
+                                   Tier-1
+                                  +-----+
+                                  |NODE |
+                               +->|  5  |--+
+                               |  +-----+  |
+                       Tier-2  |           |   Tier-2
+                      +-----+  |  +-----+  |  +-----+
+        +------------>|NODE |--+->|NODE |--+--|NODE |-------------+
+        |       +-----|  3  |--+  |  6  |  +--|  9  |-----+       |
+        |       |     +-----+     +-----+     +-----+     |       |
+        |       |                                         |       |
+        |       |     +-----+     +-----+     +-----+     |       |
+        | +-----+---->|NODE |--+  |NODE |  +--|NODE |-----+-----+ |
+        | |     | +---|  4  |--+->|  7  |--+--|  10  |--+ |     | |
+        | |     | |   +-----+  |  +-----+  |  +-----+   | |     | |
+        | |     | |            |           |            | |     | |
+      +-----+ +-----+          |  +-----+  |          +-----+ +-----+
+      |NODE | |NODE | Tier-3   +->|NODE |--+   Tier-3 |NODE | |NODE |
+      |  1  | |  2  |             |  8  |             | 11  | |  12 |
+      +-----+ +-----+             +-----+             +-----+ +-----+
+        | |     | |                                     | |     | |
+        A O     B O            <- Servers ->            Z O     O O
+~~~~
+{: #clos title="Clos Fabric"}
 
 Traffic Engineering Externsions to ISIS {{RFC5305}}. 
 
@@ -184,6 +236,11 @@ IANA Considerations
 ===================
 
 This document has no actions for IANA.
+
+Manageability Considerations
+============================
+
+TBD
 
 Security Considerations
 =======================
