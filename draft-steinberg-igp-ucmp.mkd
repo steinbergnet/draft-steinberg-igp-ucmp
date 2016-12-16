@@ -149,57 +149,35 @@ tunnel layout would be required.
 Instead, this approach is focused on a much more simple, distributed
 approach where each node in the graph can compute UCMP weights
 independent of all other nodes without requiring additional
-communication between these nodes.
+communication between these nodes. While not achieving a global
+optimum, the traffic distribution using UCMP will still be better than
+ECMP in the presence of unequal bandwidth paths.
 
 
-Blabla
-======
+Minimum Path Bandwidth {#min_path_bw}
+======================
 
-The value of the option is a 1-, 2- or 3-byte integer which encodes
-these three fields, see {{block}}.
+The goal of using all available paths and utilizing their respective
+maximum bandwidth without traffic loss leads to the concept of Minimum
+Path Bandwidth (min_path_bw). The Minimum Path Bandwidth is the
+minimum bandwidth available on any section along a multihop path from
+ingress to egress. As long as traffic imposed on that path from the
+ingress does not exceed min_path_bw (and disregarding any others flows
+in the network, see {{objective}}), no traffic will be lost.
 
+Examples
+--------
+
+For an example of a simple graph illustrating Minimum Path Bandwidth
+and UCMP weight computation see {{simple}}.
 
 ~~~~
 a ----- b
 ~~~~
-
-            0
-            0 1 2 3 4 5 6 7
-           +-+-+-+-+-+-+-+-+
-           |  NUM  |M| SZX |
-           +-+-+-+-+-+-+-+-+
-
-            0                   1
-            0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
-           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-           |          NUM          |M| SZX |
-           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-            0                   1                   2
-            0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3
-           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-           |                   NUM                 |M| SZX |
-           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-{: #block title="Block option value"}
-
-~~~~~~~~~~~
-CLIENT                                                     SERVER
-  |                                                            |
-  | CON [MID=1234], GET, /status                       ------> |
-  |                                                            |
-  | <------   ACK [MID=1234], 2.05 Content, 2/0/1/128          |
-  |                                                            |
-  | CON [MID=1235], GET, /status, 2/1/0/128            ------> |
-  |                                                            |
-  | <------   ACK [MID=1235], 2.05 Content, 2/1/1/128          |
-  |                                                            |
-  | CON [MID=1236], GET, /status, 2/2/0/128            ------> |
-  |                                                            |
-  | <------   ACK [MID=1236], 2.05 Content, 2/2/0/128          |
-~~~~~~~~~~~
-{: #simple-get title="Simple blockwise GET"}
+{: #simple title="Simple UCMP graph"}
 
 Traffic Engineering Externsions to ISIS {{RFC5305}}. 
+
 Traffic Engineering Externsions to OSPF {{RFC3630}}. 
 
 IANA Considerations
