@@ -17,7 +17,7 @@ module.exports = function(grunt) {
     },
     watch: {
       all: {
-        files: ['draft-steinberg-igp-ucmp.md'],
+        files: ['draft-steinberg-igp-ucmp.mkd'],
         tasks: ['kramdown_rfc2629'],
         options: {
           livereload: true
@@ -26,7 +26,7 @@ module.exports = function(grunt) {
     },
     kramdown_rfc2629: {
       all: {
-        src: ['draft-steinberg-igp-ucmp.md']
+        src: ['draft-steinberg-igp-ucmp.mkd']
       }
     }
   });
