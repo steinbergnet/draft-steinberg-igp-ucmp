@@ -26,8 +26,12 @@ pi: [toc, sortrefs, symrefs, compact, comments]
 normative:
   RFC2119:
   ISO-10589:
-    target: http://www.iso.org/iso/iso_catalogue/catalogue_tc/catalogue_detail.htm?csnumber=30932
-    title: Intermediate System to Intermediate System intra-domain routeing information exchange protocol for use in conjunction with the protocol for providing the connectionless-mode network service (ISO 8473)
+    target: "http://www.iso.org/iso/iso_catalogue/
+             catalogue_tc/catalogue_detail.htm?csnumber=30932"
+    title: Intermediate System to Intermediate System intra-domain
+	       routeing information exchange protocol for use in
+		   conjunction with the protocol for providing the
+		   connectionless-mode network service (ISO 8473)
     author:
       -
         ins: ISO
