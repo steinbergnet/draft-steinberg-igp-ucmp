@@ -47,6 +47,7 @@ informative:
   RFC1195:
   RFC2328:
   RFC5304:
+  RFC3209:
   
 --- abstract
 
@@ -96,8 +97,8 @@ technology for optical transmission might even dynamically alter the
 actual transmission rate based on the properties of the optical
 transmission channel (i.e. optical SNR). For example, an optical
 transponder for 400 Gpbs might reduce the transmission rate to only
-300 Gbps because optical protection rerouted the optical path along
-a much longer path, forcing the transceiver to change to a different
+300 Gbps because optical restauration rerouted to a much longer
+optical path, forcing the transceiver to change to a different
 encoding and/or FEC to compensate for the longer distance.
 
 This document proposes a method by which unequal weights can be computed
@@ -110,16 +111,6 @@ itself is not changed, i.e. the route selection of the IGP (the chosen
 set of multipath next-hops) is not modified, just the weigthing of the
 paths.
 
-Objectives
-----------
-
-The objectives of the present specification, roughly in decreasing
-order of importance, are:
-
-* Bla1
-
-* Bla2
-
 Requirements Language
 ------------------------
 
@@ -128,11 +119,49 @@ In this document, the key words "MUST", "MUST NOT", "REQUIRED",
 and "OPTIONAL" are to be interpreted as described in BCP 14, RFC 2119
 {{RFC2119}}.
 
-Content sections here   {#content}
-=====================
+Objective
+=========
+
+The objective of this proposal is to find among the set of forwarding
+next-hops elected by the IGP (ECMP set) for a given destination
+address corresponding weights for each next-hop such that the load
+distribution is optimal for the entire mutipath graph from the ingress
+to the egress in question. Optimality in this context is defined as
+being able to utilize the maximum amount of bandwidth without incuring
+packet loss that is possible in the given network graph without
+resorting to traffic engineering via not-best paths, i.e. while still
+following the multipath Shortest Path Tree (SPT) to that destination.
+
+In the following discussion the egress node in the IGP link-state
+graph is considered instead of the actual destination adress, since
+all address prefixes in link-state IGPs are attached to a node in the
+link-state topology anyway, rendering all prefixes attached to such a
+node equivalent from the point of view of path selection.
+
+Each pair of [ingress, egress] nodes is considered in isolation, no
+attempt is made to account for bandwidth consumed by other flows in
+the network. This means that the result of the weight computation will
+not result in a globally optimal distribution of traffic. For this,
+something like RSVP-TE {{RFC3209}} with bandwidth reservation or a
+centralized controller architecture computing a globally optimal
+tunnel layout would be required.
+
+Instead, this approach is focused on a much more simple, distributed
+approach where each node in the graph can compute UCMP weights
+independent of all other nodes without requiring additional
+communication between these nodes.
+
+
+Blabla
+======
 
 The value of the option is a 1-, 2- or 3-byte integer which encodes
 these three fields, see {{block}}.
+
+
+~~~~
+a ----- b
+~~~~
 
             0
             0 1 2 3 4 5 6 7
