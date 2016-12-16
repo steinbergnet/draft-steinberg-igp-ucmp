@@ -42,7 +42,7 @@ informative:
   RFC3630:
   RFC1195:
   RFC2328:
-  RFC3567:
+  RFC5304:
   
 --- abstract
 
@@ -51,10 +51,9 @@ multiple parallel links and parallel paths in the network topology to
 achieve the desired bandwidth capacities and levels of redundancy. In
 order to be able to use these multipath resources efficiently they
 rely on Equal Cost Multipath (ECMP) routing in the underlying Interior
-Gateway Protocol (IGP) (ISIS or OSPF).  If these different paths
-through the network are not equal and are of different bandwidth, ECMP
-will not deliver optimal load distribution and can in fact cause
-traffic loss.
+Gateway Protocol (ISIS or OSPF).  If these different paths through the
+network are not equal and are of different bandwidth, ECMP will not
+deliver optimal load distribution and can in fact cause traffic loss.
 
 This document proposes a method by which unequal weights can be
 computed for these paths based on actual link bandwidth, changing the
@@ -64,14 +63,15 @@ information available within the Link-State IGP.
 
 --- middle
 
-# Introduction
+Introduction   {#intro}
+============
 
 Large service provider networks typically rely heavily on using
 multiple parallel links and parallel paths in the network topology to
 achieve the desired bandwidth capacities and levels of redundancy. In
 order to be able to use these multipath resources efficiently they
 rely on Equal Cost Multipath (ECMP) routing in the underlying Interior
-Gateway Protocol (IGP) (ISIS or OSPF).
+Gateway Protocol (IGP) (ISIS {{ISO-10589}}, {{RFC1195}} or OSPF {{RFC2328}}).
 
 This works fairly well -- as long as the different paths are truly equal
 from a bandwidth perspective -- because ECMP (as its name implies) is
@@ -106,7 +106,8 @@ itself is not changed, i.e. the route selection of the IGP (the chosen
 set of multipath next-hops) is not modified, just the weigthing of the
 paths.
 
-## Objectives
+Objectives
+----------
 
 The objectives of the present specification, roughly in decreasing
 order of importance, are:
@@ -115,25 +116,83 @@ order of importance, are:
 
 * Bla2
 
-## Terminology
+Requirements Terminology
+------------------------
 
 In this document, the key words "MUST", "MUST NOT", "REQUIRED",
 "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY",
 and "OPTIONAL" are to be interpreted as described in BCP 14, RFC 2119
 {{RFC2119}}.
 
-# Content sections here
+Content sections here   {#content}
+=====================
 
+The value of the option is a 1-, 2- or 3-byte integer which encodes
+these three fields, see {{block}}.
 
+            0
+            0 1 2 3 4 5 6 7
+           +-+-+-+-+-+-+-+-+
+           |  NUM  |M| SZX |
+           +-+-+-+-+-+-+-+-+
 
-# Security Considerations
+            0                   1
+            0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           |          NUM          |M| SZX |
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+            0                   1                   2
+            0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           |                   NUM                 |M| SZX |
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+{: #block title="Block option value"}
+
+~~~~~~~~~~~
+CLIENT                                                     SERVER
+  |                                                            |
+  | CON [MID=1234], GET, /status                       ------> |
+  |                                                            |
+  | <------   ACK [MID=1234], 2.05 Content, 2/0/1/128          |
+  |                                                            |
+  | CON [MID=1235], GET, /status, 2/1/0/128            ------> |
+  |                                                            |
+  | <------   ACK [MID=1235], 2.05 Content, 2/1/1/128          |
+  |                                                            |
+  | CON [MID=1236], GET, /status, 2/2/0/128            ------> |
+  |                                                            |
+  | <------   ACK [MID=1236], 2.05 Content, 2/2/0/128          |
+~~~~~~~~~~~
+{: #simple-get title="Simple blockwise GET"}
+
+Traffic Engineering Externsions to ISIS {{RFC5305}}. 
+Traffic Engineering Externsions to OSPF {{RFC3630}}. 
+
+IANA Considerations
+===================
+
+This document has no actions for IANA.
+
+Security Considerations
+=======================
 
 This document does not change the security aspects of IS-IS or OSPF.
 Security considerations specific to each protocol still apply. For
-more information see {{RFC3567}} and {{RFC2328}}.
+more information see {{RFC5304}} and {{RFC2328}}.
 
-# Acknowledgments
+Acknowledgments
+===============
 
 The author would like to thank Thomas Beckhaus for his comments on
 this document.
 
+Comments
+========
+
+Comments are solicited and should be addressed to the author at dws@steinbergnet.net.
+
+{::comment}
+Comments are solicited and should be addressed to the working group's
+mailing list at ___@______ and/or the author(s).
+{:/comment}
