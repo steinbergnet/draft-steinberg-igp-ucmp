@@ -42,30 +42,25 @@ informative:
   RFC3630:
   RFC1195:
   RFC2328:
-
+  RFC3567:
+  
 --- abstract
 
 Large service provider networks typically rely heavily on using
 multiple parallel links and parallel paths in the network topology to
 achieve the desired bandwidth capacities and levels of redundancy. In
 order to be able to use these multipath resources efficiently they
-rely on Equal Cost Multipath (ECMP) routing in the underlying IGP
-(ISIS or OSPF).
+rely on Equal Cost Multipath (ECMP) routing in the underlying Interior
+Gateway Protocol (IGP) (ISIS or OSPF).  If these different paths
+through the network are not equal and are of different bandwidth, ECMP
+will not deliver optimal load distribution and can in fact cause
+traffic loss.
 
-If these different paths through the network are not equal and
-are of different bandwidth, ECMP will not deliver optimal load
-distribution. In fact this may result in loss of traffic due to
-overload on specific links even if the total available capacity would
-be sufficient to carry all traffic without loss.
-
-This memo proposed a method by which unequal weights can be computed
-for these paths based on actual link bandwidth, changing the load
-distribution mechanism of the routers from ECMP to Unequal Cost
-Multipath (UCMP). This weight computation happens entirely based on
-information available within the Link-State IGP without changing the
-IGP behaviour itself, i.e. the path decision of the IGP (the chosen
-set of multipath next-hops) is not modified, just the weigthing of the
-paths. 
+This document proposes a method by which unequal weights can be
+computed for these paths based on actual link bandwidth, changing the
+load distribution mechanism of the routers from ECMP to Unequal Cost
+Multipath (UCMP). This weight computation is based entirely on
+information available within the Link-State IGP.
 
 --- middle
 
@@ -75,8 +70,8 @@ Large service provider networks typically rely heavily on using
 multiple parallel links and parallel paths in the network topology to
 achieve the desired bandwidth capacities and levels of redundancy. In
 order to be able to use these multipath resources efficiently they
-rely on Equal Cost Multipath (ECMP) routing in the underlying IGP
-(ISIS or OSPF).
+rely on Equal Cost Multipath (ECMP) routing in the underlying Interior
+Gateway Protocol (IGP) (ISIS or OSPF).
 
 This works fairly well -- as long as the different paths are truly equal
 from a bandwidth perspective -- because ECMP (as its name implies) is
@@ -89,7 +84,7 @@ this may result in loss of traffic due to overload on specific links
 even if the total available capacity would be sufficient to carry all
 traffic without loss.
 
-There can be many reasons why paths might not be equal, one or more
+There can be many reasons why paths might not be equal: one or more
 links in a bundle of links may have failed, or the physical rollout of
 links in the network was simply not possible in exactly symmetrical
 fashion due to economic or availability constraints. Emerging
@@ -101,32 +96,24 @@ transponder for 400 Gpbs might reduce the transmission rate to only
 a much longer path, forcing the transceiver to change to a different
 encoding and/or FEC to compensate for the longer distance.
 
-This memo proposed a method by which unequal weights can be computed
+This document proposes a method by which unequal weights can be computed
 for these paths based on actual link bandwidth, changing the load
 distribution mechanism of the routers from ECMP to Unequal Cost
 Multipath (UCMP). This weight computation happens entirely based on
 information available within the Link-State IGP. Note that the IGP
-path computation (SPF, Dijkstra-Algorithm) itself is not changed,
-i.e. the route selection of the IGP (the chosen set of multipath
-next-hops) is not modified, just the weigthing of the paths.
+path computation using Dijkstra's Shortest Path First (SPF) algorithm
+itself is not changed, i.e. the route selection of the IGP (the chosen
+set of multipath next-hops) is not modified, just the weigthing of the
+paths.
 
 ## Objectives
 
 The objectives of the present specification, roughly in decreasing
 order of importance, are:
 
-* Representing a reasonable set of basic data types and structures
-  using binary encoding.  "Reasonable" here is largely influenced by
-  the capabilities of JSON, with the single addition of adding raw
-  byte strings.  The structures supported are limited to trees; no
-  loops or lattice-style graphs.
+* Bla1
 
-* Being implementable in a very small amount of code, thus being
-  applicable to constrained nodes {{?I-D.ietf-lwig-terminology}}, even
-  of class 1.  (Complexity goal.)  As a corollary: Being close to
-  contemporary machine representations of data (e.g., not requiring
-  binary-to-decimal conversion).
-
+* Bla2
 
 ## Terminology
 
@@ -135,5 +122,18 @@ In this document, the key words "MUST", "MUST NOT", "REQUIRED",
 and "OPTIONAL" are to be interpreted as described in BCP 14, RFC 2119
 {{RFC2119}}.
 
-# [ Insert content sections here ]
+# Content sections here
+
+
+
+# Security Considerations
+
+This document does not change the security aspects of IS-IS or OSPF.
+Security considerations specific to each protocol still apply. For
+more information see {{RFC3567}} and {{RFC2328}}.
+
+# Acknowledgments
+
+The author would like to thank Thomas Beckhaus for his comments on
+this document.
 
