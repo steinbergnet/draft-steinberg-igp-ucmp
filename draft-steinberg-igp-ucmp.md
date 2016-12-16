@@ -116,7 +116,7 @@ order of importance, are:
 
 * Bla2
 
-Requirements Terminology
+Requirements Language
 ------------------------
 
 In this document, the key words "MUST", "MUST NOT", "REQUIRED",
