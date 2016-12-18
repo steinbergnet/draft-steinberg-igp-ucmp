@@ -19,7 +19,7 @@ author:
     code: D-53567
     country: Germany
     email: dws@steinbergnet.net
-#   phone: +49-160-8551949 
+#   phone: +49-160-8551949
 
 pi: [toc, sortrefs, symrefs, compact, comments]
 
@@ -48,7 +48,7 @@ informative:
   RFC2328:
   RFC5304:
   RFC3209:
-  
+
 --- abstract
 
 Large service provider networks typically rely heavily on using
@@ -173,64 +173,82 @@ For an example of a simple graph illustrating Minimum Path Bandwidth
 and UCMP weight computation see {{simple}}.
 
 ~~~~
-   +-------+ +--------+ +--------+ +-------+ +-------+
-   A       DCI1       Agg1       Agg3      DCI3      Z
-   |  DC1  | |   M1   | |   C    | |   M2  | |  DC2  |
-   |       DCI2       Agg2       Agg4      DCI4      |
-   +-------+ +--------+ +--------+ +-------+ +-------+
+             bw=400
+         A------------C
+   200 / |            | \ bw=200
+      /  |            |  \
+     S   |400      400|   T
+      \  |            |  /
+   200 \ |            | / bw=100
+         B------------D
+             bw=400
 ~~~~
 {: #simple title="Simple UCMP graph"}
 
-bla
+All numbers are expressing bandwidth. IGP metrics are assumed to be
+suitable for ECMP from S to T, i.e. all link metrics equial to 1 would
+work. The direction of traffic flow in consideration is from left to
+right, from S to T. {{simple}} shows a symmetrical setup where edge
+nodes S and T are dual-homed to the core (A, B, C, D), except for one
+asymmetry: the link D-T on the egress side is degraded to 100 Gbps,
+whereas all other edge-core links have a bandwidth of 200 Gbps.
 
 ~~~~
-              +-------+   +-------+   +------+   +------+
-              |       |   |       |   |      |   |      |
-           +--+ AGN11 +---+ AGN21 +---+ ABR1 +---+ LSR1 +--> to AGN
-          /   |       |  /|       |   |      |   |      |
-   +----+/    +-------+\/ +-------+   +------+  /+------+
-   | AN |              /\                     \/
-   +----+\    +-------+  \+-------+   +------+/\ +------+
-          \   |       |   |       |   |      |  \|      |
-           +--+ AGN12 +---+ AGN22 +---+ ABR2 +---+ LSR2 +--> to AGN
-              |       |   |       |   |      |   |      |
-              +-------+   +-------+   +------+   +------+
-
-   static route     ISIS L1 LDP             ISIS L2 LDP
-
-   <-Access-><--Aggregation Domain--><---------Core--------->
+                 load=150G
+                A------------C
+ECMP weight=1 / |            | \ bw=200
+             /  |            |  \
+traffic ==> S   |            |   T
+300 Gbps     \  |            |  /
+ECMP weight=1 \ |            | / bw=100
+                B------------D   LOSS=50G!
+                 load=150G 
 ~~~~
-{: #smpls title="Seamless MPLS"}
+{: #simple-loss title="Traffic Loss due to ECMP"}
+
+Using regular ECMP procedues, the ingress node S does not consider the
+fact that on the egress side the bandwidths are 200:100, upper
+vs. lower path, but instead employs a 1:1 loadsharing, sending 50%
+of the traffic along the upper path, and 50% along the lower path.
+It is easy to see that the given topology could support 300 Gpbs S to T
+without traffic loss, but using ECMP 50 Gbps is lost on the lower path
+because S is sending half of the total traffic (150 Gpbs) to the lower
+path {{simple-loss}}.
 
 ~~~~
-                                   Tier-1
-                                  +-----+
-                                  |NODE |
-                               +->|  5  |--+
-                               |  +-----+  |
-                       Tier-2  |           |   Tier-2
-                      +-----+  |  +-----+  |  +-----+
-        +------------>|NODE |--+->|NODE |--+--|NODE |-------------+
-        |       +-----|  3  |--+  |  6  |  +--|  9  |-----+       |
-        |       |     +-----+     +-----+     +-----+     |       |
-        |       |                                         |       |
-        |       |     +-----+     +-----+     +-----+     |       |
-        | +-----+---->|NODE |--+  |NODE |  +--|NODE |-----+-----+ |
-        | |     | +---|  4  |--+->|  7  |--+--|  10  |--+ |     | |
-        | |     | |   +-----+  |  +-----+  |  +-----+   | |     | |
-        | |     | |            |           |            | |     | |
-      +-----+ +-----+          |  +-----+  |          +-----+ +-----+
-      |NODE | |NODE | Tier-3   +->|NODE |--+   Tier-3 |NODE | |NODE |
-      |  1  | |  2  |             |  8  |             | 11  | |  12 |
-      +-----+ +-----+             +-----+             +-----+ +-----+
-        | |     | |                                     | |     | |
-        A O     B O            <- Servers ->            Z O     O O
+               min_path_bw=200G
+            <-------------------->
+                A------------C
+          200 / |            | \ bw=200
+             /  |            |  \
+            S   |            |   T
+             \  |            |  /
+          200 \ |            | / bw=100
+                B------------D   LOSS=50G!
+            <-------------------->
+               min_path_bw=100G 
 ~~~~
-{: #clos title="Clos Fabric"}
+{: #simple-min-path-bw title="min_path_bw for upper and lower path"}
 
-Traffic Engineering Externsions to ISIS {{RFC5305}}. 
+Using UCMP we can fully utilize the available 300 Gbps without traffic
+loss.
 
-Traffic Engineering Externsions to OSPF {{RFC3630}}. 
+~~~~
+                 load=200G
+                A------------C
+ECMP weight=2 / |            | \ bw=200
+             /  |            |  \
+traffic ==> S   |            |   T
+300 Gbps     \  |            |  /
+ECMP weight=1 \ |            | / bw=100
+                B------------D
+                 load=100G 
+~~~~
+{: #simple-noloss title="No Traffic Loss with UCMP"}
+
+Traffic Engineering Externsions to ISIS {{RFC5305}}.
+
+Traffic Engineering Externsions to OSPF {{RFC3630}}.
 
 IANA Considerations
 ===================
