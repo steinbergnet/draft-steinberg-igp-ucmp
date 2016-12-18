@@ -208,12 +208,12 @@ ECMP weight=1 \ |            | / bw=100
 
 Using regular ECMP procedues, the ingress node S does not consider the
 fact that on the egress side the bandwidths are 200:100, upper
-vs. lower path, but instead employs a 1:1 loadsharing, sending 50%
-of the traffic along the upper path, and 50% along the lower path.
-It is easy to see that the given topology could support 300 Gpbs S to T
-without traffic loss, but using ECMP 50 Gbps is lost on the lower path
-because S is sending half of the total traffic (150 Gpbs) to the lower
-path {{simple-loss}}.
+vs. lower path, but instead employs a 1:1 loadsharing, sending 50% of
+the traffic along the upper path, and 50% along the lower path.  It is
+easy to see that the given topology could support 300 Gpbs S to T
+without traffic loss, but using ECMP it can be seen in {{simple-loss}}
+that 50 Gbps is lost on the lower path because S is sending half of
+the total traffic (150 Gpbs) to the lower path.
 
 ~~~~
                min_path_bw=200G
@@ -230,8 +230,8 @@ path {{simple-loss}}.
 ~~~~
 {: #simple-min-path-bw title="min_path_bw for upper and lower path"}
 
-Using UCMP we can fully utilize the available 300 Gbps without traffic
-loss.
+As illustrated in {{simple-noloss}} Using UCMP we can fully utilize
+the available 300 Gbps without traffic loss.
 
 ~~~~
                  load=200G
