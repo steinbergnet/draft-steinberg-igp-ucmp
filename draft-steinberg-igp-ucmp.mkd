@@ -154,23 +154,10 @@ communication between these nodes. While not achieving a global
 optimum, the traffic distribution using UCMP will still be better than
 ECMP in the presence of unequal bandwidth paths.
 
+Problem Statement
+=================
 
-Minimum Path Bandwidth {#min_path_bw}
-======================
-
-The goal of using all available paths and utilizing their respective
-maximum bandwidth without traffic loss leads to the concept of Minimum
-Path Bandwidth (min_path_bw). The Minimum Path Bandwidth is the
-minimum bandwidth available on any section along a multihop path from
-ingress to egress. As long as traffic imposed on that path from the
-ingress does not exceed min_path_bw (and disregarding any others flows
-in the network, see {{objective}}), no traffic will be lost.
-
-Examples
---------
-
-For an example of a simple graph illustrating Minimum Path Bandwidth
-and UCMP weight computation see {{simple}}.
+{{simple}} shows a sample graph topology with 2 edge nodes, S and T.
 
 ~~~~
              bw=400
@@ -183,15 +170,20 @@ and UCMP weight computation see {{simple}}.
          B------------D
              bw=400
 ~~~~
-{: #simple title="Simple UCMP graph"}
+{: #simple title="Sample topology with link bandwidths"}
 
 All numbers are expressing bandwidth. IGP metrics are assumed to be
-suitable for ECMP from S to T, i.e. all link metrics equial to 1 would
+suitable for ECMP from S to T, i.e. all link metrics equal to 1 would
 work. The direction of traffic flow in consideration is from left to
-right, from S to T. {{simple}} shows a symmetrical setup where edge
-nodes S and T are dual-homed to the core (A, B, C, D), except for one
-asymmetry: the link D-T on the egress side is degraded to 100 Gbps,
-whereas all other edge-core links have a bandwidth of 200 Gbps.
+right, from S to T. The setup is symmetrical where edge nodes S and T
+are dual-homed to the core (A, B, C, D), except for one asymmetry: the
+link D-T on the egress side is degraded to 100 Gbps, whereas all other
+edge-core links have a bandwidth of 200 Gbps.
+
+Using regular ECMP procedures, the ingress node S does not consider
+the fact that on the egress side the bandwidths are 200:100, upper
+vs. lower path, but instead employs a 1:1 loadsharing, sending 50% of
+the traffic along the upper path, and 50% along the lower path.
 
 ~~~~
                  load=150G
@@ -206,14 +198,26 @@ ECMP weight=1 \ |            | / bw=100
 ~~~~
 {: #simple-loss title="Traffic Loss due to ECMP"}
 
-Using regular ECMP procedues, the ingress node S does not consider the
-fact that on the egress side the bandwidths are 200:100, upper
-vs. lower path, but instead employs a 1:1 loadsharing, sending 50% of
-the traffic along the upper path, and 50% along the lower path.  It is
-easy to see that the given topology could support 300 Gpbs S to T
-without traffic loss, but using ECMP it can be seen in {{simple-loss}}
-that 50 Gbps is lost on the lower path because S is sending half of
-the total traffic (150 Gpbs) to the lower path.
+It is easy to see that the given topology could support 300 Gbps S to
+T without traffic loss, but using ECMP it is evident in
+{{simple-loss}} that 50 Gbps is lost on the lower path because S is
+sending half of the total traffic (150 Gpbs) to the lower path.
+
+Minimum Path Bandwidth {#min_path_bw}
+----------------------
+
+The goal of using all available paths and utilizing their respective
+maximum bandwidth without traffic loss leads to the concept of Minimum
+Path Bandwidth (min_path_bw). The Minimum Path Bandwidth is the
+minimum bandwidth available on any section along a multihop path from
+ingress to egress. As long as traffic imposed on that path from the
+ingress does not exceed min_path_bw (and disregarding any others flows
+in the network, see {{objective}}), no traffic will be lost.
+
+The Minimum Path Bandwidths (min_path_bw) of the upper and lower path
+are shown in {{simple-min-path-bw}}. Instead of using equal weigths as
+in ECMP, S should distribute traffic weighted according to the
+min_path_bw(s).
 
 ~~~~
                min_path_bw=200G
@@ -224,31 +228,43 @@ the total traffic (150 Gpbs) to the lower path.
             S   |            |   T
              \  |            |  /
           200 \ |            | / bw=100
-                B------------D   LOSS=50G!
+                B------------D
             <-------------------->
                min_path_bw=100G 
 ~~~~
 {: #simple-min-path-bw title="min_path_bw for upper and lower path"}
 
-As illustrated in {{simple-noloss}} Using UCMP we can fully utilize
-the available 300 Gbps without traffic loss.
+As illustrated in {{simple-noloss}}, using UCMP and weighting the
+paths according to the respective min_path_bw it is possible to fully
+utilize the available 300 Gbps without traffic loss.
 
 ~~~~
                  load=200G
                 A------------C
-ECMP weight=2 / |            | \ bw=200
+UCMP weight=2 / |            | \ bw=200
              /  |            |  \
 traffic ==> S   |            |   T
 300 Gbps     \  |            |  /
-ECMP weight=1 \ |            | / bw=100
+UCMP weight=1 \ |            | / bw=100
                 B------------D
                  load=100G 
 ~~~~
 {: #simple-noloss title="No Traffic Loss with UCMP"}
 
-Traffic Engineering Externsions to ISIS {{RFC5305}}.
+Problem Summary
+---------------
 
-Traffic Engineering Externsions to OSPF {{RFC3630}}.
+The asymmetry or degration of link bandwidth may not be directly at
+the source S, but somewhere downstream on the path to destination T.
+Using only information about local links at S, S has no knowledge
+about degration of either path and can only load-share with equal
+weights (1:1), which may lead to traffic loss.
+
+Instead, S should weight traffic according to min_path_bw, which can
+be computed from the topology graph if bandwidth information is
+available. Such information can be made available in the link-state
+IGP by deploying Traffic Engineering Externsions for ISIS {{RFC5305}}
+or OSPF {{RFC3630}}.
 
 IANA Considerations
 ===================
