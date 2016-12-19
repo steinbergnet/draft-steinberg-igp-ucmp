@@ -263,8 +263,56 @@ weights (1:1), which may lead to traffic loss.
 Instead, S should weight traffic according to min_path_bw, which can
 be computed from the topology graph if bandwidth information is
 available. Such information can be made available in the link-state
-IGP by deploying Traffic Engineering Externsions for ISIS {{RFC5305}}
+IGP by deploying Traffic Engineering Extensions for ISIS {{RFC5305}}
 or OSPF {{RFC3630}}.
+
+UCMP Weight Computation
+=======================
+
+To compute UCMP weights for source node S for traffic to T, the first
+step SHOULD be to compute the multipath SPT to T, resulting in a
+Directed Acyclic Graph (DAG) that is a subgraph of the network
+topology. All further computations are done on that DAG.
+All "n" possible paths from S to T within this DAG SHALL be
+enumerated. These paths traverse a total of "m" links.
+
+The problem now is to assign bandwidths (x_1, ..., x_n) to each of these
+paths such that the aggregate bandwidth is maximized while still not
+overloading any link in the DAG.
+
+x_i denotes the assigned bandwidth of path i.
+The vector of path bandwidths is x = (x_1, ..., x_n).
+
+b_i denotes the availabe link bandwidth for link i.
+The vector of available link bandwidths is b = (b_1, ..., b_m).
+
+The vector b is known, whereas vector x is unknown and to be computed.
+
+A is a known matrix of coefficients that are 1 if the path traverses
+the corresponding link and 0 otherwise.
+The matrix multiplication A x yields a vector of numbers that
+represent link utilizations.
+
+The constraint of not overloading any link can now be stated in terms
+of a matrix multiplication:  A x <= b
+
+The aggregate bandwidth is bw = SUM(i=1..n, x_i). 
+
+The result bw of this function is to be maximized while still
+fulfiling the constraint A x <= b.
+
+These types of problems are well-known in mathematics and informatics
+and are solved through linear programing (LP). One well-know algorithm
+for LP is the simplex algorithm, but there are others as well.
+
+The UCMP computation SHOULD utilize a LP solver to maximize bw under
+the given constraints.
+
+The resulting vector x expresses path bandwidths. To determine UCMP
+weights, all paths SHALL be grouped by first-hop next-hop and for
+each first hop, the bandwidths of all path traversing that hop SHALL
+be added together. The resulting bandwidth numbers for each first-hop
+can directly be used as UCMP weights.
 
 IANA Considerations
 ===================
