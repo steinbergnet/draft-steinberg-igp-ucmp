@@ -279,13 +279,13 @@ DAG subgraph is shown in {{dag}}.
 
 ~~~~
                      400
-                A----------->C
-          200 /                \ bw=200
-             /                  \
-            S                    T
-             \                  /
-          200 \                / bw=100
-                B----------->D
+               A----------->C
+          200 /              \ bw=200
+             /                \
+            S                  T
+             \                /
+          200 \              / bw=100
+               B----------->D
                      400
 ~~~~
 {: #dag title="DAG subgraph"}
@@ -307,7 +307,7 @@ In this example the list of links (m = 6) with their bandwidths is:
 | B-D  |       400 |
 | C-T  |       200 |
 | D-T  |       100 |
-{: #simple-links title="Link Table (Contraints)"}
+{: #simple-links title="Link Table"}
 
 The corresponding list of paths (n = 2) with their min_path_bw is:
 
@@ -320,6 +320,26 @@ The corresponding list of paths (n = 2) with their min_path_bw is:
 The problem now is to assign bandwidths (x_1, ..., x_n) to each of these
 paths such that the aggregate bandwidth is maximized while still not
 overloading any link in the DAG.
+
+In this extremely simple example the min_path_bw can be computed
+easily by taking the minimum of all the link bandwidths along the
+path. 
+
+Unfourtunately this fails for more complex DAGs where the paths
+overlap, as can be seen in {{dag-complex}}.
+
+~~~~
+                  7
+               A-----C
+            4 / \7  / \ 5
+             /   \ /   \
+            S     \     T
+             \   / \   /
+            4 \ /2  \ / 5
+               B-----D
+                  2
+~~~~
+{: #dag-complex title="Complex DAG subgraph"}
 
 x_i denotes the assigned bandwidth of path i.
 The vector of path bandwidths is x = (x_1, ..., x_n).
