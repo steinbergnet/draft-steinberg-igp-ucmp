@@ -154,7 +154,7 @@ communication between these nodes. While not achieving a global
 optimum, the traffic distribution using UCMP will still be better than
 ECMP in the presence of unequal bandwidth paths.
 
-Problem Statement
+Problem Statement  {#problem_statement}
 =================
 
 {{simple}} shows a sample graph topology with 2 edge nodes, S and T.
@@ -272,9 +272,50 @@ UCMP Weight Computation
 To compute UCMP weights for source node S for traffic to T, the first
 step SHOULD be to compute the multipath SPT to T, resulting in a
 Directed Acyclic Graph (DAG) that is a subgraph of the network
-topology. All further computations are done on that DAG.
+topology.
+
+For the sample topology in {{simple}} from {{problem_statement}} the
+DAG subgraph is shown in {{dag}}.
+
+~~~~
+                     400
+                A----------->C
+          200 /                \ bw=200
+             /                  \
+            S                    T
+             \                  /
+          200 \                / bw=100
+                B----------->D
+                     400
+~~~~
+{: #dag title="DAG subgraph"}
+
+The edges S->A, S->B, C->T and D->T are also directed but this is not
+possible to visualize in ASCII art.
+
+All further computations are done on that DAG.
 All "n" possible paths from S to T within this DAG SHALL be
 enumerated. These paths traverse a total of "m" links.
+
+In this example the list of links (m = 6) with their bandwidths is:
+
+| Link | Bandwidth |
+|:-----|----------:|
+| S-A  |       200 |
+| S-B  |       200 |
+| A-C  |       400 |
+| B-D  |       400 |
+| C-T  |       200 |
+| D-T  |       100 |
+{: #simple-links title="Link Table (Contraints)"}
+
+The corresponding list of paths (n = 2) with their min_path_bw is:
+
+| Path    | min_path_bw |
+|:--------|------------:|
+| S-A-C-T |         200 |
+| S-B-D-T |         100 |
+{: #simple-paths title="Path Enumeration"}
 
 The problem now is to assign bandwidths (x_1, ..., x_n) to each of these
 paths such that the aggregate bandwidth is maximized while still not
@@ -340,7 +381,8 @@ this document.
 Comments
 ========
 
-Comments are solicited and should be addressed to the author at dws@steinbergnet.net.
+Comments are solicited and should be addressed to the author at
+dws@steinbergnet.net.
 
 {::comment}
 Comments are solicited and should be addressed to the working group's
