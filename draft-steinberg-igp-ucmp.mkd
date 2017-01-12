@@ -161,13 +161,13 @@ Problem Statement  {#problem_statement}
 
 ~~~~
              bw=400
-         A------------C
-   200 / |            | \ bw=200
-      /  |            |  \
-     S   |400      400|   T
-      \  |            |  /
-   200 \ |            | / bw=100
-         B------------D
+        A------------C
+   200 /|            |\ bw=200
+      / |            | \
+     S  |400      400|  T
+      \ |            | /
+   200 \|            |/ bw=100
+        B------------D
              bw=400
 ~~~~
 {: #simple title="Sample topology with link bandwidths"}
@@ -187,13 +187,13 @@ the traffic along the upper path, and 50% along the lower path.
 
 ~~~~
                  load=150G
-                A------------C
-ECMP weight=1 / |            | \ bw=200
-             /  |            |  \
-traffic ==> S   |            |   T
-300 Gbps     \  |            |  /
-ECMP weight=1 \ |            | / bw=100
-                B------------D   LOSS=50G!
+               A------------C
+ECMP weight=1 /|            |\ bw=200
+             / |            | \
+traffic ==> S  |            |  T
+300 Gbps     \ |            | /
+ECMP weight=1 \|            |/ bw=100
+               B------------D  LOSS=50G!
                  load=150G 
 ~~~~
 {: #simple-loss title="Traffic Loss due to ECMP"}
@@ -221,15 +221,15 @@ min_path_bw(s).
 
 ~~~~
                min_path_bw=200G
-            <-------------------->
-                A------------C
-          200 / |            | \ bw=200
-             /  |            |  \
-            S   |            |   T
-             \  |            |  /
-          200 \ |            | / bw=100
-                B------------D
-            <-------------------->
+            <------------------->
+               A------------C
+          200 /|            |\ bw=200
+             / |            | \
+            S  |            |  T
+             \ |            | /
+          200 \|            |/ bw=100
+               B------------D
+            <------------------->
                min_path_bw=100G 
 ~~~~
 {: #simple-min-path-bw title="min_path_bw for upper and lower path"}
@@ -240,13 +240,13 @@ utilize the available 300 Gbps without traffic loss.
 
 ~~~~
                  load=200G
-                A------------C
-UCMP weight=2 / |            | \ bw=200
-             /  |            |  \
-traffic ==> S   |            |   T
-300 Gbps     \  |            |  /
-UCMP weight=1 \ |            | / bw=100
-                B------------D
+               A------------C
+UCMP weight=2 /|            |\ bw=200
+             / |            | \
+traffic ==> S  |            |  T
+300 Gbps     \ |            | /
+UCMP weight=1 \|            |/ bw=100
+               B------------D
                  load=100G 
 ~~~~
 {: #simple-noloss title="No Traffic Loss with UCMP"}
