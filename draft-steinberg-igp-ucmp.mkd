@@ -280,11 +280,11 @@ DAG subgraph is shown in {{dag}}.
 ~~~~
                      400
                A----------->C
-          200 /              \ bw=200
+          200 /              \ 200
              /                \
             S                  T
              \                /
-          200 \              / bw=100
+          200 \              / 100
                B----------->D
                      400
 ~~~~
@@ -294,8 +294,56 @@ The edges S->A, S->B, C->T and D->T are also directed but this is not
 possible to visualize in ASCII art.
 
 All further computations are done on that DAG.
+The DAG subgraph contains a total of "m" links.
+
+The weighting to be computed is the bandwidth assigned by ingress node
+S to each of its first-hop neighbors (e.g. A, B) for traffic towards T.
+
+x_i denotes the assigned bandwidth for neighbor i.
+The vector of neighbor bandwidths is x = (x_1, ..., x_n).
+
+b_j denotes the availabe link bandwidth for link j.
+The vector of available link bandwidths is b = (b_1, ..., b_m).
+
+The vector b is known, whereas vector x is unknown and to be computed.
+
+A is a matrix of coefficients that represent the fraction of the
+neighbor bandwidth x_i that occurs on link j, i.e. if S sends 10G to
+neighbor B, 100% of that bandwidth (10G) will appear on link D-T.
+In the simple example, this matrix consists entirely of zeros and
+ones. For more complex graph topologies this is not the case anymore
+since traffic sent to a given first-hop may split up further
+downstream so that only a fraction of that traffic may traverse any
+specific link in question.
+
+In order to correctly populate the coefficients in matrix A, it is
+neccessary to know how the downstream nodes distribute traffic to 
+their first-hop neighbors. To compute this, this algorithm is used
+recursively for all downstream neighbors until the egress is reached.
+Once matrix A is known, the vector of link utilizations l_j can be
+computed using a matrix mutiplication l = A x.
+
+The constraint of not overloading any link can now be stated in terms
+of a matrix multiplication: A x <= b
+
+The aggregate bandwidth is bw = SUM(i=1..n, x_i). 
+
+The result bw of this function is to be maximized while still
+fulfiling the constraint A x <= b.
+
+These types of problems are well-known in mathematics and informatics
+and are solved through linear programing (LP). One well-know algorithm
+for LP is the simplex algorithm, but there are others as well.
+
+The UCMP computation SHOULD utilize a LP solver to maximize bw under
+the given constraints.
+
+The resulting vector x expresses bandwidths for first-hop neighbors
+and at the same time represents the UCMP weighting that should be used
+for traffic distribution.
+
 All "n" possible paths from S to T within this DAG SHALL be
-enumerated. These paths traverse a total of "m" links.
+enumerated. 
 
 In this example the list of links (m = 6) with their bandwidths is:
 
@@ -365,39 +413,6 @@ The corresponding list of paths (n = 4) with their min_path_bw is:
 | S-B-D-T |           2 |
 {: #complex-paths title="Complex Path Enumeration"}
 
-x_i denotes the assigned bandwidth of path i.
-The vector of path bandwidths is x = (x_1, ..., x_n).
-
-b_i denotes the availabe link bandwidth for link i.
-The vector of available link bandwidths is b = (b_1, ..., b_m).
-
-The vector b is known, whereas vector x is unknown and to be computed.
-
-A is a known matrix of coefficients that are 1 if the path traverses
-the corresponding link and 0 otherwise.
-The matrix multiplication A x yields a vector of numbers that
-represent link utilizations.
-
-The constraint of not overloading any link can now be stated in terms
-of a matrix multiplication:  A x <= b
-
-The aggregate bandwidth is bw = SUM(i=1..n, x_i). 
-
-The result bw of this function is to be maximized while still
-fulfiling the constraint A x <= b.
-
-These types of problems are well-known in mathematics and informatics
-and are solved through linear programing (LP). One well-know algorithm
-for LP is the simplex algorithm, but there are others as well.
-
-The UCMP computation SHOULD utilize a LP solver to maximize bw under
-the given constraints.
-
-The resulting vector x expresses path bandwidths. To determine UCMP
-weights, all paths SHALL be grouped by first-hop next-hop and for
-each first hop, the bandwidths of all path traversing that hop SHALL
-be added together. The resulting bandwidth numbers for each first-hop
-can directly be used as UCMP weights.
 
 IANA Considerations
 ===================
