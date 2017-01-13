@@ -329,17 +329,41 @@ Unfourtunately this fails for more complex DAGs where the paths
 overlap, as can be seen in {{dag-complex}}.
 
 ~~~~
-                  7
+                  4
                A-----C
-            4 / \7  / \ 5
+            8 / \2  / \ 5
              /   \ /   \
             S     \     T
              \   / \   /
-            4 \ /2  \ / 5
+            8 \ /1  \ / 4
                B-----D
                   2
 ~~~~
 {: #dag-complex title="Complex DAG subgraph"}
+
+Here the list of links (m = 8) with their bandwidths is:
+
+| Link | Bandwidth |
+|:-----|----------:|
+| S-A  |         8 |
+| S-B  |         8 |
+| A-C  |         4 |
+| A-D  |         2 |
+| B-C  |         1 |
+| B-D  |         2 |
+| C-T  |         5 |
+| D-T  |         4 |
+{: #complex-links title="Complex Link Table"}
+
+The corresponding list of paths (n = 4) with their min_path_bw is:
+
+| Path    | min_path_bw |
+|:--------|------------:|
+| S-A-C-T |           4 |
+| S-A-D-T |           2 |
+| S-B-C-T |           1 |
+| S-B-D-T |           2 |
+{: #complex-paths title="Complex Path Enumeration"}
 
 x_i denotes the assigned bandwidth of path i.
 The vector of path bandwidths is x = (x_1, ..., x_n).
